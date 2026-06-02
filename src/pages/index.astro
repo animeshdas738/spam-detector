@@ -7,236 +7,295 @@ import '../styles/global.css';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fafafa" id="theme-color-meta" />
     <title>Spam Detector — AI-Powered Analysis</title>
-    <meta name="description" content="Detect email spam, malicious URLs, and comment spam using Claude AI" />
+    <meta name="description" content="Detect email spam, malicious URLs, and comment spam using AI" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="SpamCheck" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <!-- Prevent flash of wrong theme before first paint -->
+    <script is:inline>
+      (function(){var s=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark')})();
+    </script>
   </head>
 
-  <body class="bg-slate-50 min-h-screen antialiased">
+  <body class="bg-[#fafafa] dark:bg-[#0a0a0a] min-h-screen font-sans antialiased transition-colors duration-200">
+
+    <!-- Skip link -->
+    <a href="#main-content"
+       class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50
+              focus-visible:px-4 focus-visible:py-2 focus-visible:bg-[#171717] focus-visible:text-white focus-visible:rounded-full
+              focus-visible:text-sm focus-visible:font-medium">
+      Skip to main content
+    </a>
+
+    <!-- Mesh gradient backdrop — atmospheric, hero-scale only -->
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div class="absolute -top-1/2 left-1/2 -translate-x-1/2 w-[900px] h-[700px] opacity-30 dark:opacity-20"
+           style="background:radial-gradient(ellipse at 20% 40%,#007cf0 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,#7928ca 0%,transparent 55%),radial-gradient(ellipse at 60% 80%,#ff4d4d 0%,transparent 55%),radial-gradient(ellipse at 30% 70%,#00dfd8 0%,transparent 55%);filter:blur(90px)">
+      </div>
+    </div>
 
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200">
-      <div class="max-w-3xl mx-auto px-4 py-5 flex items-center gap-3">
-        <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
+    <header class="sticky top-0 z-40 bg-[#fafafa]/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md border-b border-[#ebebeb] dark:border-[#2e2e2e]">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 bg-[#171717] dark:bg-[#ededed] rounded-[6px] flex items-center justify-center flex-shrink-0">
+            <svg class="w-3.5 h-3.5 text-white dark:text-[#0a0a0a]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <span class="text-[15px] font-semibold tracking-[-0.3px] text-[#171717] dark:text-[#ededed] text-pretty">Spam Detector</span>
         </div>
-        <div>
-          <h1 class="text-lg font-bold text-slate-900 leading-tight">Spam Detector</h1>
-          <p class="text-xs text-slate-400">Powered by Open AI</p>
+        <div class="flex items-center gap-3">
+          <span class="font-mono text-[11px] text-[#888] dark:text-[#666] tracking-wide hidden sm:block" translate="no">Powered by OpenAI</span>
+          <button
+            type="button" id="theme-toggle"
+            class="w-8 h-8 flex items-center justify-center rounded-[6px]
+                   border border-[#ebebeb] dark:border-[#2e2e2e]
+                   text-[#888] dark:text-[#666] hover:text-[#171717] dark:hover:text-[#ededed]
+                   hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] transition-colors
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed]"
+            style="touch-action:manipulation" aria-label="Switch to dark mode">
+            <!-- Moon — shown in light mode -->
+            <svg id="icon-moon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <!-- Sun — shown in dark mode -->
+            <svg id="icon-sun" class="w-3.5 h-3.5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </button>
         </div>
       </div>
     </header>
 
     <!-- Main -->
-    <main class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    <main id="main-content" class="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-4">
 
       <!-- Detection Card -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="bg-white dark:bg-[#111111] rounded-xl border border-[#ebebeb] dark:border-[#2e2e2e] shadow-[0_2px_2px_rgba(0,0,0,0.04),0_8px_16px_-4px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_2px_rgba(0,0,0,0.3),0_8px_16px_-4px_rgba(0,0,0,0.3)] overflow-hidden">
 
-        <!-- Tab Bar -->
-        <div class="flex border-b border-slate-200" role="tablist">
-          <button
-            type="button"
-            id="tab-email"
-            role="tab"
-            aria-selected="true"
-            aria-controls="panel-email"
-            data-tab="email"
-            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
-                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
-                   text-blue-600 border-b-2 border-blue-600 bg-white"
-          >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            <span class="hidden sm:inline">Email / Text</span>
-            <span class="sm:hidden text-xs">Email</span>
-          </button>
-          <button
-            type="button"
-            id="tab-url"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-url"
-            data-tab="url"
-            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
-                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
-                   text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
-          >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-            </svg>
-            <span class="hidden sm:inline">URL Scanner</span>
-            <span class="sm:hidden text-xs">URL</span>
-          </button>
-          <button
-            type="button"
-            id="tab-comment"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-comment"
-            data-tab="comment"
-            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
-                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
-                   text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
-          >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-            </svg>
-            <span class="hidden sm:inline">Comment</span>
-            <span class="sm:hidden text-xs">Comment</span>
-          </button>
-          <button
-            type="button"
-            id="tab-image"
-            role="tab"
-            aria-selected="false"
-            aria-controls="panel-image"
-            data-tab="image"
-            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
-                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
-                   text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
-          >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <span class="hidden sm:inline">Screenshot</span>
-            <span class="sm:hidden text-xs">Image</span>
-          </button>
+        <!-- Segment Tab Bar -->
+        <div class="px-4 pt-4">
+          <div class="flex bg-[#f5f5f5] dark:bg-[#1a1a1a] rounded-[8px] p-0.5 gap-0.5" role="tablist" aria-label="Content type to analyze">
+            <button
+              type="button" id="tab-email" role="tab"
+              aria-selected="true" aria-controls="panel-email" data-tab="email"
+              class="tab-btn tab-active flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-[6px]
+                     text-[13px] font-medium transition-all duration-150
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:ring-offset-1"
+            >
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span class="hidden sm:inline">Email / Text</span>
+              <span class="sm:hidden">Email</span>
+            </button>
+            <button
+              type="button" id="tab-url" role="tab"
+              aria-selected="false" aria-controls="panel-url" data-tab="url"
+              class="tab-btn tab-inactive flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-[6px]
+                     text-[13px] font-medium transition-all duration-150
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:ring-offset-1"
+            >
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+              <span class="hidden sm:inline">URL Scanner</span>
+              <span class="sm:hidden">URL</span>
+            </button>
+            <button
+              type="button" id="tab-comment" role="tab"
+              aria-selected="false" aria-controls="panel-comment" data-tab="comment"
+              class="tab-btn tab-inactive flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-[6px]
+                     text-[13px] font-medium transition-all duration-150
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:ring-offset-1"
+            >
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+              <span class="hidden sm:inline">Comment</span>
+              <span class="sm:hidden">Comment</span>
+            </button>
+            <button
+              type="button" id="tab-image" role="tab"
+              aria-selected="false" aria-controls="panel-image" data-tab="image"
+              class="tab-btn tab-inactive flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-[6px]
+                     text-[13px] font-medium transition-all duration-150
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:ring-offset-1"
+            >
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span class="hidden sm:inline">Screenshot</span>
+              <span class="sm:hidden">Image</span>
+            </button>
+          </div>
         </div>
 
         <!-- Panels -->
-        <div class="p-6 space-y-4">
+        <div class="p-5 pt-4 space-y-4">
 
           <!-- Email Panel -->
           <div id="panel-email" role="tabpanel" aria-labelledby="tab-email">
-            <div class="flex items-center justify-between mb-2">
-              <label for="input-email" class="block text-sm font-medium text-slate-700">
-                Paste the email subject + body or any suspicious text
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="input-email" class="text-[13px] font-medium text-[#171717] dark:text-[#ededed]">
+                Paste email or suspicious text
               </label>
-              <span id="counter-email" class="text-xs text-slate-400">0 / 10,000</span>
+              <span id="counter-email" class="font-mono text-[11px] text-[#888] dark:text-[#666]">0 / 10,000</span>
             </div>
             <textarea
               id="input-email"
+              name="email-content"
               rows="7"
               maxlength="10000"
-              class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm font-mono
-                     placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent
+              autocomplete="off"
+              spellcheck="false"
+              class="w-full px-3 py-2.5 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] text-[13px] font-mono text-[#171717] dark:text-[#ededed] bg-white dark:bg-[#0a0a0a]
+                     placeholder:text-[#888] dark:placeholder:text-[#555]
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:border-[#171717] dark:focus-visible:border-[#ededed]
                      resize-none transition-colors"
-              placeholder="Subject: You've been selected for a $1,000,000 prize!
-
-Dear Winner,
-Congratulations! Your email address was randomly selected..."
+              placeholder="Subject: You've been selected for a $1,000,000 prize!&#10;&#10;Dear Winner, your email was randomly selected…"
             ></textarea>
           </div>
 
           <!-- URL Panel -->
           <div id="panel-url" role="tabpanel" aria-labelledby="tab-url" class="hidden">
-            <label class="block text-sm font-medium text-slate-700 mb-2">
-              Enter a URL to check for phishing or spam
+            <label for="input-url" class="block text-[13px] font-medium text-[#171717] dark:text-[#ededed] mb-1.5">
+              Enter a URL to check for phishing
             </label>
             <input
               type="url"
               id="input-url"
-              class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm
-                     placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent
+              name="url-content"
+              autocomplete="url"
+              spellcheck="false"
+              class="w-full px-3 h-10 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] text-[13px] text-[#171717] dark:text-[#ededed] bg-white dark:bg-[#0a0a0a]
+                     placeholder:text-[#888] dark:placeholder:text-[#555]
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:border-[#171717] dark:focus-visible:border-[#ededed]
                      transition-colors"
-              placeholder="https://suspicious-domain.xyz/click-here?ref=prize"
+              placeholder="https://suspicious-domain.xyz/click-here?ref=prize…"
             />
-            <p class="mt-2 text-xs text-slate-400">Include the full URL with http:// or https://</p>
+            <p class="mt-1.5 font-mono text-[11px] text-[#888]">Include the full URL with http:// or https://</p>
           </div>
 
           <!-- Comment Panel -->
           <div id="panel-comment" role="tabpanel" aria-labelledby="tab-comment" class="hidden">
-            <div class="flex items-center justify-between mb-2">
-              <label for="input-comment" class="block text-sm font-medium text-slate-700">
-                Paste a user comment or form submission to screen
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="input-comment" class="text-[13px] font-medium text-[#171717] dark:text-[#ededed]">
+                Paste a comment or form submission
               </label>
-              <span id="counter-comment" class="text-xs text-slate-400">0 / 10,000</span>
+              <span id="counter-comment" class="font-mono text-[11px] text-[#888] dark:text-[#666]">0 / 10,000</span>
             </div>
             <textarea
               id="input-comment"
+              name="comment-content"
               rows="7"
               maxlength="10000"
-              class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm
-                     placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent
+              autocomplete="off"
+              class="w-full px-3 py-2.5 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] text-[13px] text-[#171717] dark:text-[#ededed] bg-white dark:bg-[#0a0a0a]
+                     placeholder:text-[#888] dark:placeholder:text-[#555]
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:border-[#171717] dark:focus-visible:border-[#ededed]
                      resize-none transition-colors"
-              placeholder="Great post!! I found amazing deals at cheap-stuff-deals.com - 90% OFF everything!!! Click here NOW before it expires!!! #deals #freestuff"
+              placeholder="Great post!! Amazing deals at cheap-stuff-deals.com — 90% OFF everything!!! Click NOW before it expires…"
             ></textarea>
           </div>
 
           <!-- Image Panel -->
           <div id="panel-image" role="tabpanel" aria-labelledby="tab-image" class="hidden">
-            <label class="block text-sm font-medium text-slate-700 mb-2">
+            <label class="block text-[13px] font-medium text-[#171717] dark:text-[#ededed] mb-1.5">
               Upload a screenshot to check for spam or phishing
             </label>
             <!-- Drop zone -->
             <div
               id="drop-zone"
-              class="relative border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer
-                     hover:border-blue-400 hover:bg-blue-50 transition-colors"
+              class="relative border border-dashed border-[#a1a1a1] dark:border-[#444444] rounded-[6px] p-8 text-center cursor-pointer
+                     hover:border-[#171717] dark:hover:border-[#ededed] hover:bg-[#fafafa] dark:hover:bg-[#1a1a1a] transition-colors"
             >
-              <input type="file" id="input-image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+              <input
+                type="file"
+                id="input-image"
+                name="image-content"
+                accept="image/*"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                aria-label="Upload screenshot image"
+              />
               <div id="drop-idle" class="pointer-events-none space-y-2">
-                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mx-auto">
-                  <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-9 h-9 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[8px] flex items-center justify-center mx-auto bg-white dark:bg-[#1a1a1a] shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
+                  <svg class="w-4 h-4 text-[#888] dark:text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                   </svg>
                 </div>
-                <p class="text-sm font-medium text-slate-600">Drag & drop or tap to upload</p>
-                <p class="text-xs text-slate-400">JPEG, PNG, WebP · Max 10 MB</p>
+                <p class="text-[13px] font-medium text-[#171717] dark:text-[#ededed]">Drag & drop or click to upload</p>
+                <p class="font-mono text-[11px] text-[#888] dark:text-[#666]">JPEG, PNG, WebP · Max&nbsp;10&nbsp;MB</p>
               </div>
             </div>
             <!-- Preview -->
             <div id="image-preview" class="hidden mt-3 relative">
-              <img id="preview-img" class="w-full max-h-56 object-contain rounded-xl border border-slate-200 bg-slate-50" alt="Preview" />
+              <img
+                id="preview-img"
+                width="800" height="600"
+                class="w-full max-h-56 object-contain rounded-[6px] border border-[#ebebeb] dark:border-[#2e2e2e] bg-[#fafafa] dark:bg-[#1a1a1a]"
+                alt="Uploaded screenshot preview"
+              />
               <button
                 type="button"
                 id="remove-img-btn"
-                class="absolute top-2 right-2 w-8 h-8 bg-white border border-slate-200 rounded-full flex items-center justify-center
-                       text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors shadow-sm
-                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                class="absolute top-2 right-2 w-8 h-8 bg-white dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-[#2e2e2e] rounded-full
+                       flex items-center justify-center text-[#888] dark:text-[#666] hover:text-[#ee0000] hover:border-[#ee0000]
+                       transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.06)]
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed]"
                 style="touch-action:manipulation"
-                title="Remove image"
-                aria-label="Remove image"
+                aria-label="Remove uploaded image"
               >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
               </button>
-              <p id="preview-name" class="mt-1.5 text-xs text-slate-400 truncate"></p>
+              <p id="preview-name" class="mt-1.5 font-mono text-[11px] text-[#888] truncate min-w-0"></p>
             </div>
           </div>
 
           <!-- Action Row -->
-          <div class="flex gap-3">
+          <div class="flex gap-2 pt-1">
             <button
               type="button"
               id="clear-btn"
-              class="px-4 py-3 min-h-[44px] border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl font-medium text-sm
-                     transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              class="px-5 h-10 min-w-[80px] border border-[#ebebeb] dark:border-[#2e2e2e] bg-white dark:bg-transparent hover:bg-[#fafafa] dark:hover:bg-[#1a1a1a] active:bg-[#f5f5f5] dark:active:bg-[#2e2e2e]
+                     text-[#171717] dark:text-[#ededed] rounded-full text-[14px] font-medium transition-colors
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:ring-offset-1"
               style="touch-action:manipulation"
-              title="Clear input and results"
             >
               Clear
             </button>
             <button
               type="button"
               id="detect-btn"
-              class="flex-1 py-3 min-h-[44px] bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl
-                     font-medium text-sm transition-colors flex items-center justify-center gap-2
-                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              class="flex-1 h-10 bg-[#171717] dark:bg-[#ededed] hover:bg-[#333] dark:hover:bg-white active:bg-[#000] dark:active:bg-[#d0d0d0] disabled:bg-[#888] dark:disabled:bg-[#333] disabled:cursor-not-allowed
+                     text-white dark:text-[#0a0a0a] rounded-full text-[14px] font-medium transition-colors
+                     flex items-center justify-center gap-2
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] dark:focus-visible:ring-[#ededed] focus-visible:ring-offset-2"
               style="touch-action:manipulation"
             >
               <span id="btn-label">Analyze Email</span>
-              <svg id="btn-spinner" class="hidden motion-safe:animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <svg id="btn-spinner" class="hidden motion-safe:animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
@@ -245,50 +304,50 @@ Congratulations! Your email address was randomly selected..."
         </div>
       </div>
 
-      <!-- Results (hidden until analysis runs) -->
+      <!-- Results -->
       <div id="results" class="hidden" role="status" aria-live="polite" aria-atomic="true"></div>
 
       <!-- Feature Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-white rounded-xl border border-slate-200 p-4">
-          <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white dark:bg-[#111111] rounded-[8px] border border-[#ebebeb] dark:border-[#2e2e2e] p-4 shadow-[0_1px_1px_rgba(0,0,0,0.02),0_2px_2px_rgba(0,0,0,0.04)]">
+          <div class="w-7 h-7 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] flex items-center justify-center mb-3">
+            <svg class="w-3.5 h-3.5 text-[#171717] dark:text-[#ededed]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-slate-800 mb-1">Email Analysis</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Detect phishing, scams, and unsolicited commercial messages.</p>
+          <h3 class="text-[13px] font-semibold text-[#171717] dark:text-[#999] mb-0.5 tracking-[-0.2px] text-pretty">Email Analysis</h3>
+          <p class="text-[12px] text-[#888] dark:text-[#666] leading-relaxed">Detect phishing, scams, and unsolicited messages.</p>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 p-4">
-          <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white dark:bg-[#111111] rounded-[8px] border border-[#ebebeb] dark:border-[#2e2e2e] p-4 shadow-[0_1px_1px_rgba(0,0,0,0.02),0_2px_2px_rgba(0,0,0,0.04)]">
+          <div class="w-7 h-7 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] flex items-center justify-center mb-3">
+            <svg class="w-3.5 h-3.5 text-[#171717] dark:text-[#ededed]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-slate-800 mb-1">URL Scanner</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Identify malicious links before clicking them.</p>
+          <h3 class="text-[13px] font-semibold text-[#171717] dark:text-[#999] mb-0.5 tracking-[-0.2px] text-pretty">URL Scanner</h3>
+          <p class="text-[12px] text-[#888] dark:text-[#666] leading-relaxed">Identify malicious links before clicking.</p>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 p-4">
-          <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div class="bg-white dark:bg-[#111111] rounded-[8px] border border-[#ebebeb] dark:border-[#2e2e2e] p-4 shadow-[0_1px_1px_rgba(0,0,0,0.02),0_2px_2px_rgba(0,0,0,0.04)]">
+          <div class="w-7 h-7 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] flex items-center justify-center mb-3">
+            <svg class="w-3.5 h-3.5 text-[#171717] dark:text-[#ededed]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-slate-800 mb-1">Comment Filter</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Screen UGC for bot activity and promo spam.</p>
+          <h3 class="text-[13px] font-semibold text-[#171717] dark:text-[#999] mb-0.5 tracking-[-0.2px] text-pretty">Comment Filter</h3>
+          <p class="text-[12px] text-[#888] dark:text-[#666] leading-relaxed">Screen UGC for bots and promo spam.</p>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 p-4">
-          <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div class="bg-white dark:bg-[#111111] rounded-[8px] border border-[#ebebeb] dark:border-[#2e2e2e] p-4 shadow-[0_1px_1px_rgba(0,0,0,0.02),0_2px_2px_rgba(0,0,0,0.04)]">
+          <div class="w-7 h-7 border border-[#ebebeb] dark:border-[#2e2e2e] rounded-[6px] flex items-center justify-center mb-3">
+            <svg class="w-3.5 h-3.5 text-[#171717] dark:text-[#ededed]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-slate-800 mb-1">Screenshot Scan</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Upload scam screenshots from mobile for instant AI analysis.</p>
+          <h3 class="text-[13px] font-semibold text-[#171717] dark:text-[#999] mb-0.5 tracking-[-0.2px] text-pretty">Screenshot Scan</h3>
+          <p class="text-[12px] text-[#888] dark:text-[#666] leading-relaxed">Analyze scam screenshots from mobile.</p>
         </div>
       </div>
     </main>
@@ -311,11 +370,11 @@ Congratulations! Your email address was randomly selected..."
   }
 
   const MAX_CHARS      = 10_000;
-  const MAX_IMG_BYTES  = 10 * 1024 * 1024; // 10 MB raw
-  const MAX_IMG_DIM    = 1280;              // resize above this
+  const MAX_IMG_BYTES  = 10 * 1024 * 1024;
+  const MAX_IMG_DIM    = 1280;
 
-  let activeTab: TabId  = 'email';
-  let imageDataUrl      = '';               // base64 data URL for the selected image
+  let activeTab: TabId = 'email';
+  let imageDataUrl     = '';
 
   const tabLabels: Record<TabId, string> = {
     email:   'Analyze Email',
@@ -324,8 +383,30 @@ Congratulations! Your email address was randomly selected..."
     image:   'Analyze Screenshot',
   };
 
-  const ACTIVE_CLASSES   = ['text-blue-600', 'border-b-2', 'border-blue-600', 'bg-white'];
-  const INACTIVE_CLASSES = ['text-slate-500', 'border-b-2', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50'];
+  // Segment-control active/inactive class sets
+  // ── Dark mode toggle ───────────────────────────────────────────────────────
+  const html           = document.documentElement;
+  const themeToggle    = document.getElementById('theme-toggle') as HTMLButtonElement;
+  const iconMoon       = document.getElementById('icon-moon')!;
+  const iconSun        = document.getElementById('icon-sun')!;
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement;
+
+  function applyTheme(dark: boolean) {
+    html.classList.toggle('dark', dark);
+    iconMoon.classList.toggle('hidden', dark);
+    iconSun.classList.toggle('hidden', !dark);
+    if (themeColorMeta) themeColorMeta.content = dark ? '#0a0a0a' : '#fafafa';
+    themeToggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+
+  // Sync toggle icons with the class already set by the inline FOUC script
+  applyTheme(html.classList.contains('dark'));
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = html.classList.contains('dark');
+    applyTheme(!isDark);
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  });
 
   // ── Tab switching ──────────────────────────────────────────────────────────
   const TAB_ORDER: TabId[] = ['email', 'url', 'comment', 'image'];
@@ -333,7 +414,6 @@ Congratulations! Your email address was randomly selected..."
   document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab as TabId));
 
-    // ARIA tablist keyboard pattern: arrow keys move focus + select
     btn.addEventListener('keydown', (e) => {
       const idx = TAB_ORDER.indexOf(btn.dataset.tab as TabId);
       let next = -1;
@@ -343,27 +423,23 @@ Congratulations! Your email address was randomly selected..."
       if (e.key === 'End')        next = TAB_ORDER.length - 1;
       if (next >= 0) {
         e.preventDefault();
-        const target = TAB_ORDER[next];
-        switchTab(target);
-        (document.getElementById(`tab-${target}`) as HTMLButtonElement).focus();
+        switchTab(TAB_ORDER[next]);
+        (document.getElementById(`tab-${TAB_ORDER[next]}`) as HTMLButtonElement).focus();
       }
     });
   });
 
   function switchTab(tab: TabId) {
     activeTab = tab;
-
-    (['email', 'url', 'comment', 'image'] as TabId[]).forEach((t) => {
+    TAB_ORDER.forEach((t) => {
       const btn   = document.getElementById(`tab-${t}`) as HTMLButtonElement;
       const panel = document.getElementById(`panel-${t}`)!;
       const isActive = t === tab;
-
-      btn.classList.remove(...ACTIVE_CLASSES, ...INACTIVE_CLASSES);
-      btn.classList.add(...(isActive ? ACTIVE_CLASSES : INACTIVE_CLASSES));
+      btn.classList.toggle('tab-active',   isActive);
+      btn.classList.toggle('tab-inactive', !isActive);
       btn.setAttribute('aria-selected', String(isActive));
       panel.classList.toggle('hidden', !isActive);
     });
-
     (document.getElementById('btn-label') as HTMLSpanElement).textContent = tabLabels[tab];
     clearResults();
   }
@@ -375,8 +451,8 @@ Congratulations! Your email address was randomly selected..."
     textarea.addEventListener('input', () => {
       const len = textarea.value.length;
       counter.textContent = `${len.toLocaleString()} / ${MAX_CHARS.toLocaleString()}`;
-      counter.classList.toggle('text-red-500', len >= MAX_CHARS);
-      counter.classList.toggle('text-slate-400', len < MAX_CHARS);
+      counter.classList.toggle('text-[#ee0000]', len >= MAX_CHARS);
+      counter.classList.toggle('text-[#888]', len < MAX_CHARS);
     });
   });
 
@@ -390,17 +466,16 @@ Congratulations! Your email address was randomly selected..."
   fileInput.addEventListener('change', () => {
     if (fileInput.files?.[0]) handleFile(fileInput.files[0]);
   });
-
   dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
-    dropZone.classList.add('border-blue-400', 'bg-blue-50');
+    dropZone.dataset.dragging = '';
   });
   dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+    delete dropZone.dataset.dragging;
   });
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
-    dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+    delete dropZone.dataset.dragging;
     const file = e.dataTransfer?.files[0];
     if (file) handleFile(file);
   });
@@ -416,15 +491,13 @@ Congratulations! Your email address was randomly selected..."
       return;
     }
     if (file.size > MAX_IMG_BYTES) {
-      showError(`Image is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Please use an image under 10 MB.`);
+      showError(`Image is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Please use an image under 10 MB.`);
       return;
     }
-
     const raw = await readFileAsDataUrl(file);
     imageDataUrl = await resizeImage(raw);
-
     previewImg.src = imageDataUrl;
-    previewName.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+    previewName.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
     imagePreview.classList.remove('hidden');
     dropZone.classList.add('hidden');
     clearResults();
@@ -452,11 +525,8 @@ Congratulations! Your email address was randomly selected..."
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        if (img.width <= MAX_IMG_DIM && img.height <= MAX_IMG_DIM) {
-          resolve(dataUrl);
-          return;
-        }
-        const scale  = MAX_IMG_DIM / Math.max(img.width, img.height);
+        if (img.width <= MAX_IMG_DIM && img.height <= MAX_IMG_DIM) { resolve(dataUrl); return; }
+        const scale = MAX_IMG_DIM / Math.max(img.width, img.height);
         const canvas = document.createElement('canvas');
         canvas.width  = Math.round(img.width  * scale);
         canvas.height = Math.round(img.height * scale);
@@ -472,13 +542,12 @@ Congratulations! Your email address was randomly selected..."
     if (activeTab === 'image') {
       clearImage();
     } else {
-      const input = document.getElementById(`input-${activeTab}`) as HTMLInputElement | HTMLTextAreaElement;
-      input.value = '';
+      (document.getElementById(`input-${activeTab}`) as HTMLInputElement | HTMLTextAreaElement).value = '';
       if (activeTab !== 'url') {
         const counter = document.getElementById(`counter-${activeTab}`)!;
         counter.textContent = `0 / ${MAX_CHARS.toLocaleString()}`;
-        counter.classList.remove('text-red-500');
-        counter.classList.add('text-slate-400');
+        counter.classList.remove('text-[#ee0000]');
+        counter.classList.add('text-[#888]');
       }
     }
     clearResults();
@@ -498,14 +567,12 @@ Congratulations! Your email address was randomly selected..."
       showError(activeTab === 'image' ? 'Please upload a screenshot first.' : 'Please enter content to analyze.');
       return;
     }
-
     if (activeTab === 'url') {
       try { new URL(content); } catch {
         showError('Please enter a valid URL including http:// or https://');
         return;
       }
     }
-
     if (activeTab !== 'image' && content.length > MAX_CHARS) {
       showError(`Content is too long. Please keep it under ${MAX_CHARS.toLocaleString()} characters.`);
       return;
@@ -550,44 +617,41 @@ Congratulations! Your email address was randomly selected..."
     const resultsEl = document.getElementById('results')!;
     const { isSpam, score, scamType, explanation, indicators, educationalNote, highlights } = data;
 
-    // Traffic-light tier
     const isDangerous  = score >= 70;
     const isSuspicious = score >= 40;
-    const tierLabel    = isDangerous ? 'Dangerous'  : isSuspicious ? 'Suspicious' : 'Safe';
-    const tierDot      = isDangerous ? 'bg-red-500'   : isSuspicious ? 'bg-yellow-400' : 'bg-green-500';
-    const tierText     = isDangerous ? 'text-red-600' : isSuspicious ? 'text-yellow-600' : 'text-green-600';
-    const tierBar      = isDangerous ? 'bg-red-500'   : isSuspicious ? 'bg-yellow-400' : 'bg-green-500';
-    const tierBg       = isDangerous ? 'bg-red-50 border-red-100'   : isSuspicious ? 'bg-yellow-50 border-yellow-100' : 'bg-green-50 border-green-100';
+    const tierLabel = isDangerous ? 'Dangerous'  : isSuspicious ? 'Suspicious' : 'Safe';
+    const tierDot   = isDangerous ? 'bg-[#ee0000]'  : isSuspicious ? 'bg-[#f5a623]' : 'bg-[#1a7f4b]';
+    const tierText  = isDangerous ? 'text-[#c50000]' : isSuspicious ? 'text-[#ab570a]' : 'text-[#1a7f4b]';
+    const tierBar   = isDangerous ? 'bg-[#ee0000]'   : isSuspicious ? 'bg-[#f5a623]'   : 'bg-[#1a7f4b]';
+    const tierBg    = isDangerous ? 'bg-[#f7d4d6]'   : isSuspicious ? 'bg-[#ffefcf]'   : 'bg-[#f5f5f5]';
 
     const verdictBadge = isSpam
-      ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-           <span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>Spam Detected
+      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-[#f7d4d6] text-[#c50000]">
+           <span class="w-1.5 h-1.5 rounded-full bg-[#ee0000] inline-block"></span>Spam Detected
          </span>`
-      : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-           <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Looks Clean
+      : `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-[#f5f5f5] text-[#4d4d4d]">
+           <span class="w-1.5 h-1.5 rounded-full bg-[#1a7f4b] inline-block"></span>Looks Clean
          </span>`;
 
-    // Scam type + educational note
     const scamHtml = scamType
-      ? `<div class="rounded-xl border ${tierBg} px-4 py-3 space-y-1">
-           <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scam Type</p>
-           <p class="text-sm font-bold ${tierText}">${escapeHtml(scamType)}</p>
+      ? `<div class="rounded-[6px] ${tierBg} px-4 py-3 space-y-1">
+           <p class="font-mono text-[10px] text-[#888] uppercase tracking-widest">Scam Type</p>
+           <p class="text-[13px] font-semibold ${tierText} tracking-[-0.2px]">${escapeHtml(scamType)}</p>
            ${educationalNote
-             ? `<p class="text-xs text-slate-600 leading-relaxed pt-0.5">
-                  <span class="font-medium">How to stay safe:</span> ${escapeHtml(educationalNote)}
+             ? `<p class="text-[12px] text-[#4d4d4d] leading-relaxed pt-0.5">
+                  <span class="font-medium">Stay safe:</span> ${escapeHtml(educationalNote)}
                 </p>`
              : ''}
          </div>`
       : '';
 
-    // Indicators list
     const indicatorHtml = indicators.length > 0
       ? `<div>
-           <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Spam Indicators</p>
+           <p class="font-mono text-[10px] text-[#888] uppercase tracking-widest mb-2">Indicators</p>
            <ul class="space-y-1.5">
              ${indicators.map((ind) => `
-               <li class="flex items-start gap-2 text-sm text-slate-600">
-                 <svg class="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <li class="flex items-start gap-2 text-[13px] text-[#4d4d4d]">
+                 <svg class="w-3.5 h-3.5 text-[#888] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                  </svg>
                  ${escapeHtml(ind)}
@@ -596,50 +660,43 @@ Congratulations! Your email address was randomly selected..."
          </div>`
       : '';
 
-    // Highlighted evidence (text tabs only)
     const showHighlight = (tab === 'email' || tab === 'comment') && highlights.length > 0;
     const highlightHtml = showHighlight
       ? `<div>
-           <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Highlighted Evidence</p>
-           <div class="text-xs font-mono leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-words">${highlightText(rawContent, highlights)}</div>
-           <p class="mt-1.5 text-xs text-slate-400">
-             <span class="inline-block w-2.5 h-2.5 rounded bg-red-100 border border-red-300 mr-1"></span>Urgency
-             <span class="inline-block w-2.5 h-2.5 rounded bg-yellow-100 border border-yellow-300 mx-1 ml-2"></span>Suspicious link
-             <span class="inline-block w-2.5 h-2.5 rounded bg-orange-100 border border-orange-300 mx-1 ml-2"></span>Impersonation
+           <p class="font-mono text-[10px] text-[#888] uppercase tracking-widest mb-2">Evidence</p>
+           <div class="font-mono text-[11px] leading-relaxed bg-[#fafafa] border border-[#ebebeb] rounded-[6px] p-3 max-h-48 overflow-y-auto whitespace-pre-wrap break-words text-[#4d4d4d]">${highlightText(rawContent, highlights)}</div>
+           <p class="mt-1.5 font-mono text-[10px] text-[#888] flex items-center gap-3 flex-wrap">
+             <span class="inline-flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-sm bg-[#f7d4d6]"></span>Urgency</span>
+             <span class="inline-flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-sm bg-[#ffefcf]"></span>Link</span>
+             <span class="inline-flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-sm bg-[#d8ccf1]"></span>Impersonation</span>
            </p>
          </div>`
       : '';
 
     resultsEl.innerHTML = `
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <span class="text-sm font-semibold text-slate-700">Analysis Result</span>
+      <div class="bg-white dark:bg-[#111111] rounded-xl border border-[#ebebeb] dark:border-[#2e2e2e] shadow-[0_2px_2px_rgba(0,0,0,0.04),0_8px_16px_-4px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_2px_rgba(0,0,0,0.3),0_8px_16px_-4px_rgba(0,0,0,0.3)] overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-[#ebebeb] flex items-center justify-between gap-3">
+          <span class="text-[13px] font-semibold text-[#171717] tracking-[-0.2px]">Analysis Result</span>
           ${verdictBadge}
         </div>
         <div class="p-5 space-y-4">
-
-          <!-- Traffic-light score -->
           <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-xs font-medium text-slate-500">Risk Score</span>
-              <span class="inline-flex items-center gap-1.5 text-sm font-bold ${tierText}">
-                <span class="w-2 h-2 rounded-full ${tierDot} inline-block"></span>
-                ${tierLabel} · ${score}/100
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-mono text-[10px] text-[#888] uppercase tracking-widest">Risk Score</span>
+              <span class="inline-flex items-center gap-1.5 text-[13px] font-medium ${tierText}">
+                <span class="w-1.5 h-1.5 rounded-full ${tierDot} inline-block"></span>
+                ${tierLabel}&nbsp;&middot;&nbsp;${score}/100
               </span>
             </div>
-            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full ${tierBar} rounded-full motion-safe:transition-all motion-safe:duration-700" style="width: ${score}%"></div>
+            <div class="h-1 w-full bg-[#f5f5f5] rounded-full overflow-hidden">
+              <div class="h-full ${tierBar} rounded-full motion-safe:transition-all motion-safe:duration-700" style="width:${score}%"></div>
             </div>
           </div>
-
           ${scamHtml}
-
-          <!-- Analysis -->
           <div>
-            <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Analysis</p>
-            <p class="text-sm text-slate-600 leading-relaxed">${escapeHtml(explanation)}</p>
+            <p class="font-mono text-[10px] text-[#888] uppercase tracking-widest mb-1.5">Analysis</p>
+            <p class="text-[13px] text-[#4d4d4d] leading-relaxed">${escapeHtml(explanation)}</p>
           </div>
-
           ${indicatorHtml}
           ${highlightHtml}
         </div>
@@ -654,54 +711,43 @@ Congratulations! Your email address was randomly selected..."
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  function highlightText(raw: string, highlights: Highlight[]): string {
-    type Interval = { start: number; end: number; type: Highlight['type'] };
-    const intervals: Interval[] = [];
-
-    for (const h of highlights) {
+  function highlightText(raw: string, hl: Highlight[]): string {
+    type IV = { start: number; end: number; type: Highlight['type'] };
+    const ivs: IV[] = [];
+    for (const h of hl) {
       const re = new RegExp(escapeRegex(h.text), 'gi');
       let m: RegExpExecArray | null;
-      while ((m = re.exec(raw)) !== null) {
-        intervals.push({ start: m.index, end: m.index + m[0].length, type: h.type });
-      }
+      while ((m = re.exec(raw)) !== null) ivs.push({ start: m.index, end: m.index + m[0].length, type: h.type });
     }
-
-    // Sort by start, drop overlaps
-    intervals.sort((a, b) => a.start - b.start);
-    const merged: Interval[] = [];
+    ivs.sort((a, b) => a.start - b.start);
+    const merged: IV[] = [];
     let lastEnd = 0;
-    for (const iv of intervals) {
-      if (iv.start >= lastEnd) { merged.push(iv); lastEnd = iv.end; }
-    }
-
+    for (const iv of ivs) { if (iv.start >= lastEnd) { merged.push(iv); lastEnd = iv.end; } }
     const cls: Record<Highlight['type'], string> = {
-      urgency:       'bg-red-100 text-red-800 rounded px-0.5',
-      link:          'bg-yellow-100 text-yellow-800 rounded px-0.5',
-      impersonation: 'bg-orange-100 text-orange-800 rounded px-0.5',
+      urgency:       'bg-[#f7d4d6] text-[#c50000] rounded px-0.5',
+      link:          'bg-[#ffefcf] text-[#ab570a] rounded px-0.5',
+      impersonation: 'bg-[#d8ccf1] text-[#4c2889] rounded px-0.5',
     };
-
-    let html = '';
-    let pos  = 0;
+    let html = '', pos = 0;
     for (const iv of merged) {
       html += escapeHtml(raw.slice(pos, iv.start));
       html += `<mark class="${cls[iv.type]}">${escapeHtml(raw.slice(iv.start, iv.end))}</mark>`;
       pos = iv.end;
     }
-    html += escapeHtml(raw.slice(pos));
-    return html;
+    return html + escapeHtml(raw.slice(pos));
   }
 
   function showError(message: string) {
     const resultsEl = document.getElementById('results')!;
     resultsEl.innerHTML = `
-      <div class="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-start gap-3">
-        <svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-[#f7d4d6] border border-[#f7d4d6] rounded-xl p-5 flex items-start gap-3">
+        <svg class="w-4 h-4 text-[#ee0000] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <div>
-          <p class="text-sm font-medium text-red-700">Detection Failed</p>
-          <p class="text-sm text-red-600 mt-0.5">${escapeHtml(message)}</p>
+          <p class="text-[13px] font-semibold text-[#c50000]">Detection Failed</p>
+          <p class="text-[12px] text-[#4d4d4d] mt-0.5">${escapeHtml(message)}</p>
         </div>
       </div>`;
     resultsEl.classList.remove('hidden');
