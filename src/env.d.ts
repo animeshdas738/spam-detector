@@ -2,7 +2,7 @@
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
-  readonly ANTHROPIC_API_KEY: string;
+  readonly OPENAI_API_KEY: string;
 }
 
 interface ImportMeta {

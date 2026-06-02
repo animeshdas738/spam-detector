@@ -24,7 +24,7 @@
         </div>
         <div>
           <h1 class="text-lg font-bold text-slate-900 leading-tight">Spam Detector</h1>
-          <p class="text-xs text-slate-400">Powered by Claude AI</p>
+          <p class="text-xs text-slate-400">Powered by Open AI</p>
         </div>
       </div>
     </header>
@@ -42,6 +42,7 @@
             role="tab"
             aria-selected="true"
             aria-controls="panel-email"
+            data-tab="email"
             class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
                    text-blue-600 border-b-2 border-blue-600 bg-white"
           >
@@ -56,6 +57,7 @@
             role="tab"
             aria-selected="false"
             aria-controls="panel-url"
+            data-tab="url"
             class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
                    text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
           >
@@ -70,6 +72,7 @@
             role="tab"
             aria-selected="false"
             aria-controls="panel-comment"
+            data-tab="comment"
             class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
                    text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
           >
@@ -79,6 +82,21 @@
             </svg>
             Comment / Form
           </button>
+          <button
+            id="tab-image"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-image"
+            data-tab="image"
+            class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
+                   text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
+          >
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Screenshot
+          </button>
         </div>
 
         <!-- Panels -->
@@ -86,12 +104,16 @@
 
           <!-- Email Panel -->
           <div id="panel-email" role="tabpanel" aria-labelledby="tab-email">
-            <label class="block text-sm font-medium text-slate-700 mb-2">
-              Paste the email subject + body or any suspicious text
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label for="input-email" class="block text-sm font-medium text-slate-700">
+                Paste the email subject + body or any suspicious text
+              </label>
+              <span id="counter-email" class="text-xs text-slate-400">0 / 10,000</span>
+            </div>
             <textarea
               id="input-email"
               rows="7"
+              maxlength="10000"
               class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm font-mono
                      placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      resize-none transition"
@@ -120,12 +142,16 @@ Congratulations! Your email address was randomly selected..."
 
           <!-- Comment Panel -->
           <div id="panel-comment" role="tabpanel" aria-labelledby="tab-comment" class="hidden">
-            <label class="block text-sm font-medium text-slate-700 mb-2">
-              Paste a user comment or form submission to screen
-            </label>
+            <div class="flex items-center justify-between mb-2">
+              <label for="input-comment" class="block text-sm font-medium text-slate-700">
+                Paste a user comment or form submission to screen
+              </label>
+              <span id="counter-comment" class="text-xs text-slate-400">0 / 10,000</span>
+            </div>
             <textarea
               id="input-comment"
               rows="7"
+              maxlength="10000"
               class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm
                      placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      resize-none transition"
@@ -133,18 +159,67 @@ Congratulations! Your email address was randomly selected..."
             ></textarea>
           </div>
 
-          <!-- Submit Button -->
-          <button
-            id="detect-btn"
-            class="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl
-                   font-medium text-sm transition-colors flex items-center justify-center gap-2"
-          >
-            <span id="btn-label">Analyze Content</span>
-            <svg id="btn-spinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-          </button>
+          <!-- Image Panel -->
+          <div id="panel-image" role="tabpanel" aria-labelledby="tab-image" class="hidden">
+            <label class="block text-sm font-medium text-slate-700 mb-2">
+              Upload a screenshot to check for spam or phishing
+            </label>
+            <!-- Drop zone -->
+            <div
+              id="drop-zone"
+              class="relative border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer
+                     hover:border-blue-400 hover:bg-blue-50 transition-colors"
+            >
+              <input type="file" id="input-image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+              <div id="drop-idle" class="pointer-events-none space-y-2">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mx-auto">
+                  <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                  </svg>
+                </div>
+                <p class="text-sm font-medium text-slate-600">Drag & drop or tap to upload</p>
+                <p class="text-xs text-slate-400">JPEG, PNG, WebP · Max 10 MB</p>
+              </div>
+            </div>
+            <!-- Preview -->
+            <div id="image-preview" class="hidden mt-3 relative">
+              <img id="preview-img" class="w-full max-h-56 object-contain rounded-xl border border-slate-200 bg-slate-50" alt="Preview" />
+              <button
+                id="remove-img-btn"
+                class="absolute top-2 right-2 w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center
+                       text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors shadow-sm"
+                title="Remove image"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <p id="preview-name" class="mt-1.5 text-xs text-slate-400 truncate"></p>
+            </div>
+          </div>
+
+          <!-- Action Row -->
+          <div class="flex gap-3">
+            <button
+              id="clear-btn"
+              class="px-4 py-3 border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl font-medium text-sm transition-colors"
+              title="Clear input and results"
+            >
+              Clear
+            </button>
+            <button
+              id="detect-btn"
+              class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl
+                     font-medium text-sm transition-colors flex items-center justify-center gap-2"
+            >
+              <span id="btn-label">Analyze Email</span>
+              <svg id="btn-spinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -189,92 +264,216 @@ Congratulations! Your email address was randomly selected..."
 </html>
 
 <script>
-  // ── Types ──────────────────────────────────────────────────────────────────
-  type TabId = 'email' | 'url' | 'comment';
+  type TabId = 'email' | 'url' | 'comment' | 'image';
+
+  interface Highlight { text: string; type: 'urgency' | 'link' | 'impersonation'; }
 
   interface DetectionResult {
     isSpam: boolean;
     score: number;
+    scamType: string | null;
     explanation: string;
     indicators: string[];
+    educationalNote: string | null;
+    highlights: Highlight[];
   }
 
-  // ── State ──────────────────────────────────────────────────────────────────
-  let activeTab: TabId = 'email';
+  const MAX_CHARS      = 10_000;
+  const MAX_IMG_BYTES  = 10 * 1024 * 1024; // 10 MB raw
+  const MAX_IMG_DIM    = 1280;              // resize above this
+
+  let activeTab: TabId  = 'email';
+  let imageDataUrl      = '';               // base64 data URL for the selected image
 
   const tabLabels: Record<TabId, string> = {
-    email: 'Analyze Email',
-    url: 'Scan URL',
+    email:   'Analyze Email',
+    url:     'Scan URL',
     comment: 'Check Comment',
+    image:   'Analyze Screenshot',
   };
+
+  const ACTIVE_CLASSES   = ['text-blue-600', 'border-b-2', 'border-blue-600', 'bg-white'];
+  const INACTIVE_CLASSES = ['text-slate-500', 'border-b-2', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50'];
 
   // ── Tab switching ──────────────────────────────────────────────────────────
   document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const target = btn.id.replace('tab-', '') as TabId;
-      switchTab(target);
-    });
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab as TabId));
   });
 
   function switchTab(tab: TabId) {
     activeTab = tab;
 
-    // Update tab buttons
-    (['email', 'url', 'comment'] as TabId[]).forEach((t) => {
-      const btn = document.getElementById(`tab-${t}`) as HTMLButtonElement;
-      if (t === tab) {
-        btn.className = btn.className
-          .replace('text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50', '')
-          .replace('text-blue-600 border-blue-600 bg-white', '') // remove first, then re-add clean
-          + ' text-blue-600 border-b-2 border-blue-600 bg-white';
-        btn.setAttribute('aria-selected', 'true');
-      } else {
-        btn.className = btn.className
-          .replace('text-blue-600 border-blue-600 bg-white', '')
-          .trim() + ' text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50';
-        btn.setAttribute('aria-selected', 'false');
-      }
-    });
-
-    // Toggle panels
-    (['email', 'url', 'comment'] as TabId[]).forEach((t) => {
+    (['email', 'url', 'comment', 'image'] as TabId[]).forEach((t) => {
+      const btn   = document.getElementById(`tab-${t}`) as HTMLButtonElement;
       const panel = document.getElementById(`panel-${t}`)!;
-      panel.classList.toggle('hidden', t !== tab);
+      const isActive = t === tab;
+
+      btn.classList.remove(...ACTIVE_CLASSES, ...INACTIVE_CLASSES);
+      btn.classList.add(...(isActive ? ACTIVE_CLASSES : INACTIVE_CLASSES));
+      btn.setAttribute('aria-selected', String(isActive));
+      panel.classList.toggle('hidden', !isActive);
     });
 
-    // Update button label
     (document.getElementById('btn-label') as HTMLSpanElement).textContent = tabLabels[tab];
+    clearResults();
+  }
 
-    // Clear results
-    const resultsEl = document.getElementById('results')!;
-    resultsEl.classList.add('hidden');
-    resultsEl.innerHTML = '';
+  // ── Character counters ─────────────────────────────────────────────────────
+  (['email', 'comment'] as const).forEach((t) => {
+    const textarea = document.getElementById(`input-${t}`) as HTMLTextAreaElement;
+    const counter  = document.getElementById(`counter-${t}`)!;
+    textarea.addEventListener('input', () => {
+      const len = textarea.value.length;
+      counter.textContent = `${len.toLocaleString()} / ${MAX_CHARS.toLocaleString()}`;
+      counter.classList.toggle('text-red-500', len >= MAX_CHARS);
+      counter.classList.toggle('text-slate-400', len < MAX_CHARS);
+    });
+  });
+
+  // ── Image upload ───────────────────────────────────────────────────────────
+  const fileInput    = document.getElementById('input-image') as HTMLInputElement;
+  const dropZone     = document.getElementById('drop-zone')!;
+  const imagePreview = document.getElementById('image-preview')!;
+  const previewImg   = document.getElementById('preview-img') as HTMLImageElement;
+  const previewName  = document.getElementById('preview-name')!;
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files?.[0]) handleFile(fileInput.files[0]);
+  });
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('border-blue-400', 'bg-blue-50');
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+  });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+    const file = e.dataTransfer?.files[0];
+    if (file) handleFile(file);
+  });
+
+  document.getElementById('remove-img-btn')!.addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearImage();
+  });
+
+  async function handleFile(file: File) {
+    if (!file.type.startsWith('image/')) {
+      showError('Please upload an image file (JPEG, PNG, WebP, etc.).');
+      return;
+    }
+    if (file.size > MAX_IMG_BYTES) {
+      showError(`Image is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Please use an image under 10 MB.`);
+      return;
+    }
+
+    const raw = await readFileAsDataUrl(file);
+    imageDataUrl = await resizeImage(raw);
+
+    previewImg.src = imageDataUrl;
+    previewName.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+    imagePreview.classList.remove('hidden');
+    dropZone.classList.add('hidden');
+    clearResults();
+  }
+
+  function clearImage() {
+    imageDataUrl = '';
+    fileInput.value = '';
+    previewImg.src = '';
+    previewName.textContent = '';
+    imagePreview.classList.add('hidden');
+    dropZone.classList.remove('hidden');
+  }
+
+  function readFileAsDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function resizeImage(dataUrl: string): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width <= MAX_IMG_DIM && img.height <= MAX_IMG_DIM) {
+          resolve(dataUrl);
+          return;
+        }
+        const scale  = MAX_IMG_DIM / Math.max(img.width, img.height);
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  // ── Clear button ───────────────────────────────────────────────────────────
+  document.getElementById('clear-btn')!.addEventListener('click', () => {
+    if (activeTab === 'image') {
+      clearImage();
+    } else {
+      const input = document.getElementById(`input-${activeTab}`) as HTMLInputElement | HTMLTextAreaElement;
+      input.value = '';
+      if (activeTab !== 'url') {
+        const counter = document.getElementById(`counter-${activeTab}`)!;
+        counter.textContent = `0 / ${MAX_CHARS.toLocaleString()}`;
+        counter.classList.remove('text-red-500');
+        counter.classList.add('text-slate-400');
+      }
+    }
+    clearResults();
+  });
+
+  function clearResults() {
+    const el = document.getElementById('results')!;
+    el.classList.add('hidden');
+    el.innerHTML = '';
   }
 
   // ── Detection ──────────────────────────────────────────────────────────────
   document.getElementById('detect-btn')!.addEventListener('click', async () => {
     const content = getInput(activeTab).trim();
+
     if (!content) {
-      showError('Please enter content to analyze.');
+      showError(activeTab === 'image' ? 'Please upload a screenshot first.' : 'Please enter content to analyze.');
       return;
     }
 
-    setLoading(true);
+    if (activeTab === 'url') {
+      try { new URL(content); } catch {
+        showError('Please enter a valid URL including http:// or https://');
+        return;
+      }
+    }
 
+    if (activeTab !== 'image' && content.length > MAX_CHARS) {
+      showError(`Content is too long. Please keep it under ${MAX_CHARS.toLocaleString()} characters.`);
+      return;
+    }
+
+    const submittedTab     = activeTab;
+    const submittedContent = content;
+
+    setLoading(true);
     try {
-      const res = await fetch('/api/detect', {
+      const res  = await fetch('/api/detect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: activeTab, content }),
+        body: JSON.stringify({ type: submittedTab, content: submittedContent }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error ?? 'Request failed');
-      }
-
-      renderResult(data as DetectionResult);
+      if (!res.ok) throw new Error(data.error ?? 'Request failed');
+      renderResult(data as DetectionResult, submittedContent, submittedTab);
     } catch (err) {
       showError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
@@ -283,13 +482,13 @@ Congratulations! Your email address was randomly selected..."
   });
 
   function getInput(tab: TabId): string {
-    const el = document.getElementById(`input-${tab}`) as HTMLInputElement | HTMLTextAreaElement;
-    return el?.value ?? '';
+    if (tab === 'image') return imageDataUrl;
+    return (document.getElementById(`input-${tab}`) as HTMLInputElement | HTMLTextAreaElement)?.value ?? '';
   }
 
   function setLoading(loading: boolean) {
-    const btn = document.getElementById('detect-btn') as HTMLButtonElement;
-    const label = document.getElementById('btn-label')!;
+    const btn     = document.getElementById('detect-btn') as HTMLButtonElement;
+    const label   = document.getElementById('btn-label')!;
     const spinner = document.getElementById('btn-spinner')!;
     btn.disabled = loading;
     label.textContent = loading ? 'Analyzing…' : tabLabels[activeTab];
@@ -297,14 +496,18 @@ Congratulations! Your email address was randomly selected..."
   }
 
   // ── Results rendering ──────────────────────────────────────────────────────
-  function renderResult(data: DetectionResult) {
+  function renderResult(data: DetectionResult, rawContent: string, tab: TabId) {
     const resultsEl = document.getElementById('results')!;
+    const { isSpam, score, scamType, explanation, indicators, educationalNote, highlights } = data;
 
-    const { isSpam, score, explanation, indicators } = data;
-
-    const riskLevel = score >= 70 ? 'High Risk' : score >= 40 ? 'Suspicious' : 'Low Risk';
-    const barColor  = score >= 70 ? 'bg-red-500'    : score >= 40 ? 'bg-yellow-500' : 'bg-green-500';
-    const scoreText = score >= 70 ? 'text-red-600'  : score >= 40 ? 'text-yellow-600' : 'text-green-600';
+    // Traffic-light tier
+    const isDangerous  = score >= 70;
+    const isSuspicious = score >= 40;
+    const tierLabel    = isDangerous ? 'Dangerous'  : isSuspicious ? 'Suspicious' : 'Safe';
+    const tierDot      = isDangerous ? 'bg-red-500'   : isSuspicious ? 'bg-yellow-400' : 'bg-green-500';
+    const tierText     = isDangerous ? 'text-red-600' : isSuspicious ? 'text-yellow-600' : 'text-green-600';
+    const tierBar      = isDangerous ? 'bg-red-500'   : isSuspicious ? 'bg-yellow-400' : 'bg-green-500';
+    const tierBg       = isDangerous ? 'bg-red-50 border-red-100'   : isSuspicious ? 'bg-yellow-50 border-yellow-100' : 'bg-green-50 border-green-100';
 
     const verdictBadge = isSpam
       ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
@@ -314,8 +517,22 @@ Congratulations! Your email address was randomly selected..."
            <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Looks Clean
          </span>`;
 
+    // Scam type + educational note
+    const scamHtml = scamType
+      ? `<div class="rounded-xl border ${tierBg} px-4 py-3 space-y-1">
+           <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scam Type</p>
+           <p class="text-sm font-bold ${tierText}">${escapeHtml(scamType)}</p>
+           ${educationalNote
+             ? `<p class="text-xs text-slate-600 leading-relaxed pt-0.5">
+                  <span class="font-medium">How to stay safe:</span> ${escapeHtml(educationalNote)}
+                </p>`
+             : ''}
+         </div>`
+      : '';
+
+    // Indicators list
     const indicatorHtml = indicators.length > 0
-      ? `<div class="mt-4 pt-4 border-t border-slate-100">
+      ? `<div>
            <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Spam Indicators</p>
            <ul class="space-y-1.5">
              ${indicators.map((ind) => `
@@ -329,6 +546,20 @@ Congratulations! Your email address was randomly selected..."
          </div>`
       : '';
 
+    // Highlighted evidence (text tabs only)
+    const showHighlight = (tab === 'email' || tab === 'comment') && highlights.length > 0;
+    const highlightHtml = showHighlight
+      ? `<div>
+           <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Highlighted Evidence</p>
+           <div class="text-xs font-mono leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-52 overflow-y-auto whitespace-pre-wrap break-words">${highlightText(rawContent, highlights)}</div>
+           <p class="mt-1.5 text-xs text-slate-400">
+             <span class="inline-block w-2.5 h-2.5 rounded bg-red-100 border border-red-300 mr-1"></span>Urgency
+             <span class="inline-block w-2.5 h-2.5 rounded bg-yellow-100 border border-yellow-300 mx-1 ml-2"></span>Suspicious link
+             <span class="inline-block w-2.5 h-2.5 rounded bg-orange-100 border border-orange-300 mx-1 ml-2"></span>Impersonation
+           </p>
+         </div>`
+      : '';
+
     resultsEl.innerHTML = `
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -336,27 +567,78 @@ Congratulations! Your email address was randomly selected..."
           ${verdictBadge}
         </div>
         <div class="p-5 space-y-4">
-          <!-- Score bar -->
+
+          <!-- Traffic-light score -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-xs font-medium text-slate-500">Spam Risk Score</span>
-              <span class="text-sm font-bold ${scoreText}">${score}/100 · ${riskLevel}</span>
+              <span class="text-xs font-medium text-slate-500">Risk Score</span>
+              <span class="inline-flex items-center gap-1.5 text-sm font-bold ${tierText}">
+                <span class="w-2 h-2 rounded-full ${tierDot} inline-block"></span>
+                ${tierLabel} · ${score}/100
+              </span>
             </div>
             <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full ${barColor} rounded-full transition-all duration-700" style="width: ${score}%"></div>
+              <div class="h-full ${tierBar} rounded-full transition-all duration-700" style="width: ${score}%"></div>
             </div>
           </div>
-          <!-- Explanation -->
+
+          ${scamHtml}
+
+          <!-- Analysis -->
           <div>
             <p class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Analysis</p>
             <p class="text-sm text-slate-600 leading-relaxed">${escapeHtml(explanation)}</p>
           </div>
+
           ${indicatorHtml}
+          ${highlightHtml}
         </div>
       </div>`;
 
     resultsEl.classList.remove('hidden');
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ── Text highlighting ──────────────────────────────────────────────────────
+  function escapeRegex(s: string): string {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function highlightText(raw: string, highlights: Highlight[]): string {
+    type Interval = { start: number; end: number; type: Highlight['type'] };
+    const intervals: Interval[] = [];
+
+    for (const h of highlights) {
+      const re = new RegExp(escapeRegex(h.text), 'gi');
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(raw)) !== null) {
+        intervals.push({ start: m.index, end: m.index + m[0].length, type: h.type });
+      }
+    }
+
+    // Sort by start, drop overlaps
+    intervals.sort((a, b) => a.start - b.start);
+    const merged: Interval[] = [];
+    let lastEnd = 0;
+    for (const iv of intervals) {
+      if (iv.start >= lastEnd) { merged.push(iv); lastEnd = iv.end; }
+    }
+
+    const cls: Record<Highlight['type'], string> = {
+      urgency:       'bg-red-100 text-red-800 rounded px-0.5',
+      link:          'bg-yellow-100 text-yellow-800 rounded px-0.5',
+      impersonation: 'bg-orange-100 text-orange-800 rounded px-0.5',
+    };
+
+    let html = '';
+    let pos  = 0;
+    for (const iv of merged) {
+      html += escapeHtml(raw.slice(pos, iv.start));
+      html += `<mark class="${cls[iv.type]}">${escapeHtml(raw.slice(iv.start, iv.end))}</mark>`;
+      pos = iv.end;
+    }
+    html += escapeHtml(raw.slice(pos));
+    return html;
   }
 
   function showError(message: string) {
