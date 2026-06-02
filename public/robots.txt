@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block error pages and API routes from crawlers
+Disallow: /api/
+Disallow: /404
+Disallow: /500
+
+Sitemap: https://spamdetector.app/sitemap.xml
