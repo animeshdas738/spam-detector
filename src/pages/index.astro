@@ -1,5 +1,5 @@
 ---
-// Server-side: nothing needed here for the static UI shell
+import '../styles/global.css';
 ---
 
 <!DOCTYPE html>
@@ -38,64 +38,76 @@
         <!-- Tab Bar -->
         <div class="flex border-b border-slate-200" role="tablist">
           <button
+            type="button"
             id="tab-email"
             role="tab"
             aria-selected="true"
             aria-controls="panel-email"
             data-tab="email"
-            class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
+            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
                    text-blue-600 border-b-2 border-blue-600 bg-white"
           >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            Email / Text
+            <span class="hidden sm:inline">Email / Text</span>
+            <span class="sm:hidden text-xs">Email</span>
           </button>
           <button
+            type="button"
             id="tab-url"
             role="tab"
             aria-selected="false"
             aria-controls="panel-url"
             data-tab="url"
-            class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
+            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
                    text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
           >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
             </svg>
-            URL Scanner
+            <span class="hidden sm:inline">URL Scanner</span>
+            <span class="sm:hidden text-xs">URL</span>
           </button>
           <button
+            type="button"
             id="tab-comment"
             role="tab"
             aria-selected="false"
             aria-controls="panel-comment"
             data-tab="comment"
-            class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
+            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
                    text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
           >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
             </svg>
-            Comment / Form
+            <span class="hidden sm:inline">Comment</span>
+            <span class="sm:hidden text-xs">Comment</span>
           </button>
           <button
+            type="button"
             id="tab-image"
             role="tab"
             aria-selected="false"
             aria-controls="panel-image"
             data-tab="image"
-            class="tab-btn flex-1 py-3.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-colors
+            class="tab-btn flex-1 py-3.5 px-2 sm:px-4 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors
+                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset
                    text-slate-500 border-b-2 border-transparent hover:text-slate-700 hover:bg-slate-50"
           >
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
-            Screenshot
+            <span class="hidden sm:inline">Screenshot</span>
+            <span class="sm:hidden text-xs">Image</span>
           </button>
         </div>
 
@@ -115,8 +127,8 @@
               rows="7"
               maxlength="10000"
               class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm font-mono
-                     placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                     resize-none transition"
+                     placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent
+                     resize-none transition-colors"
               placeholder="Subject: You've been selected for a $1,000,000 prize!
 
 Dear Winner,
@@ -133,8 +145,8 @@ Congratulations! Your email address was randomly selected..."
               type="url"
               id="input-url"
               class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm
-                     placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                     transition"
+                     placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent
+                     transition-colors"
               placeholder="https://suspicious-domain.xyz/click-here?ref=prize"
             />
             <p class="mt-2 text-xs text-slate-400">Include the full URL with http:// or https://</p>
@@ -153,8 +165,8 @@ Congratulations! Your email address was randomly selected..."
               rows="7"
               maxlength="10000"
               class="w-full px-3.5 py-3 border border-slate-300 rounded-xl text-sm
-                     placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                     resize-none transition"
+                     placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent
+                     resize-none transition-colors"
               placeholder="Great post!! I found amazing deals at cheap-stuff-deals.com - 90% OFF everything!!! Click here NOW before it expires!!! #deals #freestuff"
             ></textarea>
           </div>
@@ -186,10 +198,14 @@ Congratulations! Your email address was randomly selected..."
             <div id="image-preview" class="hidden mt-3 relative">
               <img id="preview-img" class="w-full max-h-56 object-contain rounded-xl border border-slate-200 bg-slate-50" alt="Preview" />
               <button
+                type="button"
                 id="remove-img-btn"
-                class="absolute top-2 right-2 w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center
-                       text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors shadow-sm"
+                class="absolute top-2 right-2 w-8 h-8 bg-white border border-slate-200 rounded-full flex items-center justify-center
+                       text-slate-500 hover:text-red-500 hover:border-red-300 transition-colors shadow-sm
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                style="touch-action:manipulation"
                 title="Remove image"
+                aria-label="Remove image"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
@@ -202,19 +218,25 @@ Congratulations! Your email address was randomly selected..."
           <!-- Action Row -->
           <div class="flex gap-3">
             <button
+              type="button"
               id="clear-btn"
-              class="px-4 py-3 border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl font-medium text-sm transition-colors"
+              class="px-4 py-3 min-h-[44px] border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl font-medium text-sm
+                     transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              style="touch-action:manipulation"
               title="Clear input and results"
             >
               Clear
             </button>
             <button
+              type="button"
               id="detect-btn"
-              class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl
-                     font-medium text-sm transition-colors flex items-center justify-center gap-2"
+              class="flex-1 py-3 min-h-[44px] bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl
+                     font-medium text-sm transition-colors flex items-center justify-center gap-2
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              style="touch-action:manipulation"
             >
               <span id="btn-label">Analyze Email</span>
-              <svg id="btn-spinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <svg id="btn-spinner" class="hidden motion-safe:animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
@@ -224,10 +246,10 @@ Congratulations! Your email address was randomly selected..."
       </div>
 
       <!-- Results (hidden until analysis runs) -->
-      <div id="results" class="hidden"></div>
+      <div id="results" class="hidden" role="status" aria-live="polite" aria-atomic="true"></div>
 
       <!-- Feature Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white rounded-xl border border-slate-200 p-4">
           <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mb-3">
             <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,13 +272,23 @@ Congratulations! Your email address was randomly selected..."
         </div>
         <div class="bg-white rounded-xl border border-slate-200 p-4">
           <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
           <h3 class="text-sm font-semibold text-slate-800 mb-1">Comment Filter</h3>
           <p class="text-xs text-slate-500 leading-relaxed">Screen UGC for bot activity and promo spam.</p>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center mb-3">
+            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-sm font-semibold text-slate-800 mb-1">Screenshot Scan</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Upload scam screenshots from mobile for instant AI analysis.</p>
         </div>
       </div>
     </main>
@@ -296,8 +328,26 @@ Congratulations! Your email address was randomly selected..."
   const INACTIVE_CLASSES = ['text-slate-500', 'border-b-2', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50'];
 
   // ── Tab switching ──────────────────────────────────────────────────────────
+  const TAB_ORDER: TabId[] = ['email', 'url', 'comment', 'image'];
+
   document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab as TabId));
+
+    // ARIA tablist keyboard pattern: arrow keys move focus + select
+    btn.addEventListener('keydown', (e) => {
+      const idx = TAB_ORDER.indexOf(btn.dataset.tab as TabId);
+      let next = -1;
+      if (e.key === 'ArrowRight') next = (idx + 1) % TAB_ORDER.length;
+      if (e.key === 'ArrowLeft')  next = (idx - 1 + TAB_ORDER.length) % TAB_ORDER.length;
+      if (e.key === 'Home')       next = 0;
+      if (e.key === 'End')        next = TAB_ORDER.length - 1;
+      if (next >= 0) {
+        e.preventDefault();
+        const target = TAB_ORDER[next];
+        switchTab(target);
+        (document.getElementById(`tab-${target}`) as HTMLButtonElement).focus();
+      }
+    });
   });
 
   function switchTab(tab: TabId) {
@@ -578,7 +628,7 @@ Congratulations! Your email address was randomly selected..."
               </span>
             </div>
             <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full ${tierBar} rounded-full transition-all duration-700" style="width: ${score}%"></div>
+              <div class="h-full ${tierBar} rounded-full motion-safe:transition-all motion-safe:duration-700" style="width: ${score}%"></div>
             </div>
           </div>
 
