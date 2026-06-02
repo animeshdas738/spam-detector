@@ -1,0 +1,89 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Privacy Policy — Spam Detector"
+  description="How Spam Detector collects, uses, and protects your data. We do not store submitted content. Your privacy is our priority."
+  canonical="https://spamdetector.app/privacy"
+>
+  <main id="main-content" class="max-w-3xl mx-auto px-4 sm:px-6 py-10 flex-1">
+
+    <div class="mb-8">
+      <p class="font-mono text-[10px] text-[#888] dark:text-[#666] uppercase tracking-widest mb-1.5">Legal</p>
+      <h1 class="text-[28px] font-semibold text-[#171717] dark:text-[#ededed] tracking-[-0.7px] text-pretty">Privacy Policy</h1>
+      <p class="mt-2 text-[13px] text-[#888] dark:text-[#666]">Effective date: <time datetime="2025-01-01">January 1, 2025</time></p>
+    </div>
+
+    <div class="bg-white dark:bg-[#111111] rounded-xl border border-[#ebebeb] dark:border-[#2e2e2e]
+                shadow-[0_1px_1px_rgba(0,0,0,0.02),0_2px_2px_rgba(0,0,0,0.04)]
+                divide-y divide-[#ebebeb] dark:divide-[#2e2e2e]">
+
+      {[
+        {
+          id: 'overview',
+          title: '1. Overview',
+          body: `Spam Detector ("we", "us", "our") is a free AI-powered tool for detecting phishing emails, spam links, and suspicious content. This Privacy Policy explains what information we collect when you use our service at spamdetector.app, how we use it, and your rights regarding that information. By using this service you agree to the practices described here.`,
+        },
+        {
+          id: 'data-collected',
+          title: '2. Information We Collect',
+          body: null,
+        },
+        {
+          id: 'ai-processing',
+          title: '3. OpenAI API Processing',
+          body: `When you submit content for analysis, it is sent to the OpenAI API to generate a spam risk assessment. OpenAI processes this data according to their own privacy policy and API data usage policies. We do not send personally identifiable information about you to OpenAI — only the content you explicitly submit for analysis. OpenAI may use API inputs and outputs to improve their models unless you have opted out under their enterprise policies.`,
+        },
+        {
+          id: 'no-storage',
+          title: '4. Data Retention',
+          body: `We do not store, log, or retain any content you submit for analysis — emails, URLs, comments, or images. Each request is processed in-memory and discarded immediately after the response is returned to your browser. We do not maintain a database of submitted content or analysis results.`,
+        },
+        {
+          id: 'local-storage',
+          title: '5. Local Storage & Cookies',
+          body: `We store a single key in your browser's localStorage — your dark/light mode preference ("theme": "dark" | "light"). No cookies are set by this application. We do not use analytics, tracking pixels, advertising networks, or third-party scripts beyond the Google Fonts stylesheet and the OpenAI API.`,
+        },
+        {
+          id: 'third-party',
+          title: '6. Third-Party Services',
+          body: `We use the following third-party services:\n\n• OpenAI API — for AI-powered spam analysis. Content you submit is processed by OpenAI. See openai.com/privacy.\n• Google Fonts — to load the Inter and JetBrains Mono typefaces. Google may collect limited usage data per their privacy policy.\n\nWe do not use Google Analytics, Meta Pixel, or any other behavioural tracking service.`,
+        },
+        {
+          id: 'childrens',
+          title: '7. Children\'s Privacy',
+          body: `This service is not directed at children under the age of 13. We do not knowingly collect personal information from children. If you believe a child has submitted personal data through this service, please contact us immediately using the details in Section 9.`,
+        },
+        {
+          id: 'changes',
+          title: '8. Changes to This Policy',
+          body: `We may update this Privacy Policy from time to time. Changes will be reflected by updating the effective date above. Continued use of the service after changes constitutes acceptance of the revised policy. We encourage you to review this page periodically.`,
+        },
+        {
+          id: 'contact',
+          title: '9. Contact Us',
+          body: `If you have any questions about this Privacy Policy or how your data is handled, please contact us via our Contact page or send an email to privacy@spamdetector.app.`,
+        },
+      ].map(section => (
+        <section id={section.id} class="px-6 py-5">
+          <h2 class="text-[14px] font-semibold text-[#171717] dark:text-[#ededed] tracking-[-0.2px] mb-3">{section.title}</h2>
+          {section.id === 'data-collected' ? (
+            <div class="text-[13px] text-[#4d4d4d] dark:text-[#a0a0a0] leading-relaxed space-y-2">
+              <p>We collect the minimum information necessary to provide the service:</p>
+              <ul class="list-disc list-inside space-y-1 pl-1">
+                <li><strong class="font-medium text-[#171717] dark:text-[#ededed]">Submitted content</strong> — text, URLs, or images you paste or upload for analysis. This is sent to the OpenAI API and immediately discarded after the response is returned.</li>
+                <li><strong class="font-medium text-[#171717] dark:text-[#ededed]">Theme preference</strong> — stored locally in your browser's localStorage only. Never transmitted to our servers.</li>
+                <li><strong class="font-medium text-[#171717] dark:text-[#ededed]">Standard server logs</strong> — your IP address, browser user-agent, and request timestamps may be captured by the hosting provider's infrastructure logs. These are not linked to your submitted content and are retained only as long as required by the hosting provider.</li>
+              </ul>
+              <p>We do not require account registration. We do not collect names, email addresses, or payment information unless you contact us voluntarily.</p>
+            </div>
+          ) : (
+            <div class="text-[13px] text-[#4d4d4d] dark:text-[#a0a0a0] leading-relaxed whitespace-pre-line">{section.body}</div>
+          )}
+        </section>
+      ))}
+
+    </div>
+  </main>
+</Layout>
