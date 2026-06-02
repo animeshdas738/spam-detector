@@ -1,0 +1,15 @@
+name = "spam-detector"
+main = "dist/_worker.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets served directly from Cloudflare's edge
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+# Environment variables — set secrets with:
+#   wrangler secret put OPENAI_API_KEY
+# [vars] block is for non-secret config only (committed to source control)
+# [vars]
+# EXAMPLE_VAR = "value"
