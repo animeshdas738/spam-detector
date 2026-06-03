@@ -3,13 +3,26 @@ main = "dist/_worker.js"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Static assets served directly from Cloudflare's edge
+# ── Static assets ─────────────────────────────────────────────────────────────
+# Served directly from Cloudflare's edge CDN; _worker.js is excluded via
+# dist/.assetsignore so it is never served as a public file.
 [assets]
 directory = "./dist"
 binding = "ASSETS"
 
-# Environment variables — set secrets with:
+# ── Required secrets (encrypted — never stored in this file) ──────────────────
+# Set each secret once with the Wrangler CLI:
+#
 #   wrangler secret put OPENAI_API_KEY
-# [vars] block is for non-secret config only (committed to source control)
+#
+# Wrangler will prompt for the value and store it encrypted in Cloudflare.
+# For local development, copy the values to .dev.vars (gitignored):
+#
+#   OPENAI_API_KEY=sk-proj-...
+#
+# Required secrets:
+#   OPENAI_API_KEY — OpenAI API key used by /api/detect to run spam analysis
+
+# ── Non-secret config vars (safe to commit) ───────────────────────────────────
 # [vars]
-# EXAMPLE_VAR = "value"
+# EXAMPLE_PUBLIC_VAR = "value"
