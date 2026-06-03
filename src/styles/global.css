@@ -31,6 +31,6 @@
 [data-dragging] { border-color: #171717 !important; background-color: #fafafa !important; }
 .dark [data-dragging] { border-color: #ededed !important; background-color: #1a1a1a !important; }
 
-/* ── Character counter over-limit ────────────────────────────────────────── */
+/* ── Character counter over-limit -────────────────────────────────────────── */
 .counter-over { color: #ee0000; }
 .dark .counter-over { color: #ff6666; }
