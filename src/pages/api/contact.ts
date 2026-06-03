@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
   // TODO: integrate an email provider (Resend, SendGrid, Nodemailer) here.
   // Example with Resend:
   //   const resend = new Resend(import.meta.env.RESEND_API_KEY);
-  //   await resend.emails.send({ from: 'noreply@spamdetector.app', to: 'hello@spamdetector.app',
+  //   await resend.emails.send({ from: 'noreply@home.spampishing.com', to: 'hello@home.spampishing.com',
   //     subject: `Contact: ${subject}`, text: `From: ${name} <${email}>\n\n${message}` });
 
   console.log('[contact] New message from', name, email, '|', subject);

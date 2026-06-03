@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
-  site: 'https://spamdetector.app',
+  site: 'https://home.spampishing.com',
   output: 'server',
   adapter: cloudflare({
     platformProxy: { enabled: true }, // enables Cloudflare bindings in `astro dev`

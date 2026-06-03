@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-const BASE = 'https://spamdetector.app';
+const BASE = 'https://home.spampishing.com';
 
 // lastmod = date content was last meaningfully updated
 const PAGES = [
