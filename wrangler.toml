@@ -22,6 +22,7 @@ binding = "ASSETS"
 #
 # Required secrets:
 #   OPENAI_API_KEY — OpenAI API key used by /api/detect to run spam analysis
+#   DATABASE_URL   — PostgreSQL connection URL used by /api/report to store reported issues
 
 # ── Non-secret config vars (safe to commit) ───────────────────────────────────
 # [vars]
