@@ -23,3 +23,20 @@ CREATE INDEX IF NOT EXISTS idx_reported_issues_created_at
 
 CREATE INDEX IF NOT EXISTS idx_reported_issues_issue_type
   ON spampishing.reported_issues (issue_type);
+
+CREATE TABLE IF NOT EXISTS spampishing.contact_messages (
+  id          BIGSERIAL     PRIMARY KEY,
+  name        VARCHAR(255)  NOT NULL,
+  email       VARCHAR(255)  NOT NULL,
+  subject     TEXT,
+  message     TEXT          NOT NULL,
+  user_agent  TEXT,
+  ip_address  VARCHAR(45),
+  created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at
+  ON spampishing.contact_messages (created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_contact_messages_email
+  ON spampishing.contact_messages (email);

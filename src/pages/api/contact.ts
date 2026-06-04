@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { createDb } from '../../lib/db';
 
 interface ContactBody {
   name?: string;
@@ -8,7 +9,7 @@ interface ContactBody {
   _hp?: string; // honeypot
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const headers = { 'Content-Type': 'application/json' };
 
   let body: ContactBody;
@@ -38,13 +39,36 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: 'Message must be at least 10 characters.' }), { status: 400, headers });
   }
 
-  // TODO: integrate an email provider (Resend, SendGrid, Nodemailer) here.
-  // Example with Resend:
-  //   const resend = new Resend(import.meta.env.RESEND_API_KEY);
-  //   await resend.emails.send({ from: 'noreply@home.spampishing.com', to: 'hello@home.spampishing.com',
-  //     subject: `Contact: ${subject}`, text: `From: ${name} <${email}>\n\n${message}` });
+  const dbUrl = locals.runtime?.env?.DATABASE_URL || import.meta.env.DATABASE_URL;
+  if (!dbUrl) {
+    console.error('[contact] DATABASE_URL not configured');
+    return new Response(JSON.stringify({ error: 'Service unavailable.' }), { status: 503, headers });
+  }
 
-  console.log('[contact] New message from', name, email, '|', subject);
+  const userAgent = request.headers.get('user-agent') ?? null;
+  const ipAddress = request.headers.get('cf-connecting-ip')
+    ?? request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+    ?? null;
+
+  const sql = createDb(dbUrl);
+  try {
+    await sql`
+      INSERT INTO spampishing.contact_messages (name, email, subject, message, user_agent, ip_address)
+      VALUES (
+        ${name.trim()},
+        ${email.trim()},
+        ${subject?.trim() || null},
+        ${message.trim()},
+        ${userAgent},
+        ${ipAddress}
+      )
+    `;
+  } catch (err) {
+    console.error('[contact] DB error:', err);
+    return new Response(JSON.stringify({ error: 'Failed to save message.' }), { status: 500, headers });
+  } finally {
+    await sql.end();
+  }
 
   return new Response(JSON.stringify({ success: true }), { status: 200, headers });
 };
