@@ -60,7 +60,7 @@ const MAX_IMAGE_B64    = 5_000_000; // ~3.7 MB raw
 export const POST: APIRoute = async ({ request, locals }) => {
   const headers = { 'Content-Type': 'application/json' };
 
-  const apiKey = locals.runtime?.env?.OPENAI_API_KEY;
+  const apiKey = locals.runtime?.env?.OPENAI_API_KEY || import.meta.env.OPENAI_API_KEY;
   if (!apiKey || apiKey === 'your_api_key_here') {
     return new Response(JSON.stringify({ error: 'OPENAI_API_KEY is not configured on the server.' }), {
       status: 503,
